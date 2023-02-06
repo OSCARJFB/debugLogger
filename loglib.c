@@ -1,10 +1,3 @@
-/*
-    Writen by: Oscar Bergström
-    https://github.com/OSCARJFB
-*/
-
-#ifndef LOGGER_H
-#define LOGGER_H
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -19,17 +12,17 @@ typedef struct __dateTime__
 void __getDateTime__(FILE *LOG_FILE)
 {
     time_t t = time(NULL); 
-    struct tm tm = *localtime(&t);
+    struct tm local_time = *localtime(&t);
     __dateTime__ date; 
 
-    date.year = tm.tm_year + 1900;  
-    date.month = tm.tm_mon + 1;
-    date.day = tm.tm_mday; 
-    date.hour = tm.tm_hour;
-    date.min = tm.tm_min;
-    date.sec = tm.tm_sec;
+    date.year = local_time.tm_year + 1900;  
+    date.month = local_time.tm_mon + 1;
+    date.day = local_time.tm_mday; 
+    date.hour = local_time.tm_hour;
+    date.min = local_time.tm_min;
+    date.sec = local_time.tm_sec;
 
-    fprintf(LOG_FILE, "%d-%d/%d %d:%d:%d ", date.year, date.day, date.month, date.hour, date.min, date.sec);
+    fprintf(LOG_FILE, "%d%d%d %d:%d:%d ", date.year, date.day, date.month, date.hour, date.min, date.sec);
 }
 
 void __formatLog__(char *logRow, va_list args, FILE *LOG_FILE)
@@ -82,18 +75,6 @@ void __formatLog__(char *logRow, va_list args, FILE *LOG_FILE)
     LOG_FILE = NULL;
 }
 
-void debugLog(char *logRow, ...)
-{
-    va_list args; 
-    va_start(args, logRow);
-    
-    FILE *LOG_FILE = fopen("debug.log", "a");
-    __getDateTime__(LOG_FILE); 
-    __formatLog__(logRow, args, LOG_FILE);
-
-    va_end(args);
-}
-
 void eventLog(char *logRow, ...)
 {
     va_list args; 
@@ -105,5 +86,3 @@ void eventLog(char *logRow, ...)
 
     va_end(args);
 }
-
-#endif // LOGGER_H
