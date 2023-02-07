@@ -1,13 +1,8 @@
 #	Writen by: Oscar Bergström
 #   https://github.com/OSCARJFB
 
-lib: loglib.c loglib.h
-	cc -c loglib.c
-
-tests: testA.c testB.c loglib.o
-	cc testA.c loglib.o -o testA.o
-	cc testB.c loglib.o -o testB.o
+lib: loglib.c loglib.h tests.c loglib.o
+	cc -c loglib.c; cc tests.c loglib.o -o tests.o
 
 clean: 
-	rm -rf *.o 
-	rm -rf *.log
+	rm -rf *.o; rm -rf *.log
