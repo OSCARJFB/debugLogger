@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
@@ -10,10 +11,20 @@ typedef struct dateTime
     int hour, min, sec;
 } dateTime;
 
-typedef struct settings
+typedef struct fileMetaData
 {
-    char *fileName;
-} settings;
+    char fileName[100];
+    int currentLine;
+} fileMetaData;
+
+/* "Evil" global variable.... */
+fileMetaData metaData;
+
+#define RUN_IF_FILE_ACCESS_ERR               \
+    if (LOG_FILE == NULL)                    \
+    {                                        \
+        puts("Error couldn't access file."); \
+    }
 
 /**
  * This function gets the date time year/day/month/hour/min/sec.
@@ -103,15 +114,61 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
 }
 
 /**
- * The "logger" function.
- * When called act as the starting point of logwriting.
+ * Simply counts all the lines in a file.
+ * This is used to keep track of when to write/create a new file.
+ */
+int countLinesInFile(char *fileName)
+{
+    FILE *LOG_FILE = fopen(fileName, "w+");
+    RUN_IF_FILE_ACCESS_ERR;
+
+    int newlines = 0, c;
+    while (c = getc(LOG_FILE) != EOF)
+    {
+        if(c == '\n')
+        {
+            ++newlines; 
+        }
+    }
+    return newlines;
+}
+
+/**
+ * Simply counts all the lines in a file.
+ * This is used to keep track of when to write/create a new file.
+ * Only file name is needed as a parameter, not the extension type.
+ */
+void setLogName(char *fileName)
+{
+    const int max_size = 99; 
+    if(strlen(fileName) > max_size)
+    {
+        fileName[max_size + 1] = '\0';
+    }
+
+    strcpy(metaData.fileName, fileName);
+    strcat(metaData.fileName, ".log");
+    metaData.currentLine = 0;
+}
+
+/**
+ * This is the "logger" function.
+ * Which when called, initiates the actual log writing.
+ * It takes a string with formatters followed by any corresponding amount of parameters.
  */
 void logEvent(char *logRow, ...)
 {
     va_list args;
     va_start(args, logRow);
 
-    FILE *LOG_FILE = fopen("debug.log", "a");
+    FILE *LOG_FILE = fopen(metaData.fileName, "a");
+    RUN_IF_FILE_ACCESS_ERR;
+
+    if (metaData.currentLine == 0)
+    {
+        countLinesInFile(metaData.fileName);
+    }
+
     setCurrentDateTime(LOG_FILE);
     writeStringToFile(logRow, args, LOG_FILE);
 

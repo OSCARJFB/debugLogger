@@ -14,6 +14,12 @@ int main(void)
     const int ExecutionLimit = 1000;
 
     /**
+     * FILE SETUP
+     * Give the log file a name.
+     */
+    setLogName("Formatting");
+
+    /**
      * TEXT FORMATTING TEST
      * Here we test how the function handles different ways of formatting text.
      */
@@ -23,7 +29,11 @@ int main(void)
                  1, 12, 123, 1234, 12345, "Astring", 'c', 123456);
     }
 
-    system("mv debug.log testA.log");
+    /**
+     * FILE SETUP
+     * Give the log file a name.
+     */
+    setLogName("ExecutionTime");
 
     /**
      * EXECUTION TIME TEST,
@@ -39,9 +49,17 @@ int main(void)
 
     total_time = total_time / ExecutionLimit;
 
-    system("rm -rf debug.log");
     logEvent("Average execution time = %f", total_time);
-    system("mv debug.log testB.log");
+    /*
+    if(total_time > 0.000030)
+    {
+        logEvent("Execution time exceded 0.000030 test = fail");
+    }
+    else 
+    {
+        logEvent("test = success");
+    }
+    */
 
     return 0;
 }
