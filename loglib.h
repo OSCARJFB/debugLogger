@@ -7,6 +7,5 @@
 #define LOGLIB_H
 
 void logEvent(char *logRow, ...);
-void setLogName(char *logName, ...);
 
 #endif // LOGLIB_H
