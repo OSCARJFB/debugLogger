@@ -116,9 +116,36 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
     }
 
     fprintf(LOG_FILE, "\n");
-    fclose(LOG_FILE);
-    LOG_FILE = NULL;
 }
+
+#define NEWLINE_LIMIT 100
+
+/**
+ *  Counts the number of newlines in the current logfile. 
+ *  Returns an integer value that is used to determine wether or not data should be written to a new file. 
+ */
+int countLogFileNewLines(char *fileName)
+{
+    int newLines = 0, c = 0; 
+    FILE *LOG_FILE = fopen(fileName, "r");
+    if (LOG_FILE == NULL)
+    {
+        puts("logEvent: Error, Couldn't read file.");
+        return -1;
+    }
+
+    while((c = fgetc(LOG_FILE)) != EOF)
+    {
+        newLines += c == '\n' ? 1 : 0; 
+    }
+
+    fclose(LOG_FILE);
+    LOG_FILE = NULL; 
+
+    return newLines;
+}
+
+#define FILENAME_LIMIT 100
 
 /**
  * This is the "logger" function.
@@ -130,10 +157,14 @@ void logEvent(char *logRow, ...)
     va_list args;
     va_start(args, logRow);
 
-    FILE *LOG_FILE = fopen("event.log", "a");
+    char *fileName = "event.log";
+    
+    int newLines = countLogFileNewLines(fileName);
+
+    FILE *LOG_FILE = fopen(fileName, "a");
     if (LOG_FILE == NULL)
     {
-        printf("Error Couldn't open file.");
+        puts("logEvent: Error, Couldn't append to file.");
         return;
     }
 
@@ -141,4 +172,7 @@ void logEvent(char *logRow, ...)
     writeStringToFile(logRow, args, LOG_FILE);
 
     va_end(args);
+
+    fclose(LOG_FILE);
+    LOG_FILE = NULL;
 }

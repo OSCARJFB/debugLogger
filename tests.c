@@ -12,7 +12,7 @@ int main(void)
 {
     clock_t start_time = 0, end_time = 0;
     double total_time = 0.0;
-    const int ExecutionLimit = 1;
+    const int ExecutionLimit = 1000;
 
     for (int i = 0; i < ExecutionLimit; ++i)
     {
@@ -29,7 +29,6 @@ int main(void)
     }
 
     printf("Average time: %f", total_time / ExecutionLimit);
-
 
     return 0;
 }
