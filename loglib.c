@@ -120,28 +120,27 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
 
 void lstrcat(char *fileName, int logNum)
 {
-    int strEnd = 0; 
+    int strEnd = 0;
     const char *extention = ".log";
-    char str[10];  
+    char str[10];
     sprintf(str, "%d", logNum);
 
-
-    for(int i = 0; fileName[i] != '\0'; ++i)
+    for (int i = 0; fileName[i] != '\0'; ++i)
     {
-        if(fileName[i + 1] == '\0')
+        if (fileName[i + 1] == '\0')
         {
-            strEnd = i + 1; 
+            strEnd = i + 1;
         }
     }
 
-    for(int i = 0; str[i] != '\0'; ++i)
+    for (int i = 0; str[i] != '\0'; ++i)
     {
-        fileName[strEnd++] = str[i]; 
+        fileName[strEnd++] = str[i];
     }
 
-    for(int i = 0; extention[i] != '\0'; ++i)
+    for (int i = 0; extention[i] != '\0'; ++i)
     {
-        fileName[strEnd + i] = extention[i]; 
+        fileName[strEnd + i] = extention[i];
     }
 }
 
@@ -157,8 +156,8 @@ int countLogFileNewLines(char *fileName)
     FILE *LOG_FILE = fopen(fileName, "r");
     if (LOG_FILE == NULL)
     {
-        puts("logEvent: Error, Couldn't read file.");
-        return -1;
+        puts("countLogFileNewLines: Error couldn't access file.");
+        return newLines;
     }
 
     while ((c = fgetc(LOG_FILE)) != EOF)
@@ -175,6 +174,18 @@ int countLogFileNewLines(char *fileName)
 #define FILENAME_LIMIT 20
 #define ROW_LIMIT 1000
 
+int newNumerationOnFile(char *fileName, int newLines, int logNum)
+{
+    if(newLines >= ROW_LIMIT)
+    {
+        ++logNum;
+        strcpy(fileName, "file");
+        lstrcat(fileName, logNum);
+    }
+    
+    return logNum; 
+}
+
 /**
  * This is the "logger" function.
  * Which when called, initiates the actual log writing.
@@ -184,21 +195,26 @@ void logEvent(char *logRow, ...)
 {
     va_list args;
     va_start(args, logRow);
+    
     char *fileName = malloc(FILENAME_LIMIT * sizeof(char));
+    if(fileName == NULL)
+    {
+        puts("logEvent: Error memory allocation resulted in a nullptr.");
+        return;     
+    }
+
     strcpy(fileName, "file");
 
     static int logNum = 0;
     lstrcat(fileName, logNum);
     int newLines = countLogFileNewLines(fileName);
-    if (newLines == ROW_LIMIT)
-    {
-        ++logNum; 
-    }
+
+    logNum = newNumerationOnFile(fileName, newLines, logNum);
 
     FILE *LOG_FILE = fopen(fileName, "a");
     if (LOG_FILE == NULL)
     {
-        printf("logEvent: Error, Couldn't append to file %s.\n", fileName);
+        puts("logEvent: Error couldn't access file.");
         return;
     }
 
@@ -209,6 +225,7 @@ void logEvent(char *logRow, ...)
 
     fclose(LOG_FILE);
     LOG_FILE = NULL;
+    
     free(fileName);
-    fileName = NULL; 
+    fileName = NULL;
 }

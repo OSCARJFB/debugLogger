@@ -25,7 +25,7 @@ int main(void)
         logEvent("Start Test -> None %%q -> Test End.");
 
         end_time = clock(); 
-        total_time += (double)(start_time - end_time) / CLOCKS_PER_SEC; 
+        total_time += (double)(end_time - start_time) / CLOCKS_PER_SEC; 
     }
 
     printf("Average time: %f", total_time / ExecutionLimit);
