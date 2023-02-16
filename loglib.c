@@ -1,3 +1,8 @@
+/*
+    Writen by: Oscar Bergström
+    https://github.com/OSCARJFB
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -118,6 +123,10 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
     fprintf(LOG_FILE, "\n");
 }
 
+/**
+ *  string concatenation, adding a number to the end of the logfile. 
+ *  After the number is added, the file extention will be added aswell. 
+ */
 void lstrcat(char *fileName, int logNum)
 {
     int strEnd = 0;
@@ -174,6 +183,10 @@ int countLogFileNewLines(char *fileName)
 #define FILENAME_LIMIT 20
 #define ROW_LIMIT 1000
 
+/**
+ *  Numerates the logfiles, depending on the amount of rows currently written to the log. 
+ *  Returns an unchanged value if ROW_LIMIT is not hit, else it will increment the log numeration by one. 
+ */
 int newNumerationOnFile(char *fileName, int newLines, int logNum)
 {
     if(newLines >= ROW_LIMIT)
