@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 
 /**
  * This function gets the date time year/day/month/hour/min/sec.
@@ -123,9 +124,29 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
     fprintf(LOG_FILE, "\n");
 }
 
+/** 
+ *  Check if a folder exists, if not create one. 
+ *  This folder will be used for storing the logsfiles.
+ */
+int createLogFolder(void)
+{
+    struct stat l_stat;
+    const char *folderName = "LogArchive";
+    
+    if (stat(folderName, &l_stat) == -1)
+    {
+        if(mkdir(folderName, 0777) == -1)
+        {
+            return -1; 
+        }
+    }
+
+    return 0;
+}
+
 /**
- *  string concatenation, adding a number to the end of the logfile. 
- *  After the number is added, the file extention will be added aswell. 
+ *  string concatenation, adding a number to the end of the logfile.
+ *  After the number is added, the file extention will be added aswell.
  */
 void lstrcat(char *fileName, int logNum)
 {
@@ -153,8 +174,6 @@ void lstrcat(char *fileName, int logNum)
     }
 }
 
-#define NEWLINE_LIMIT 100
-
 /**
  *  Counts the number of newlines in the current logfile.
  *  Returns an integer value that is used to determine wether or not data should be written to a new file.
@@ -180,24 +199,25 @@ int countLogFileNewLines(char *fileName)
     return newLines;
 }
 
-#define FILENAME_LIMIT 20
-#define ROW_LIMIT 1000
+#define NEWLINE_LIMIT 1000
 
 /**
- *  Numerates the logfiles, depending on the amount of rows currently written to the log. 
- *  Returns an unchanged value if ROW_LIMIT is not hit, else it will increment the log numeration by one. 
+ *  Numerates the logfiles, depending on the amount of rows currently written to the log.
+ *  Returns an unchanged value if ROW_LIMIT is not hit, else it will increment the log numeration by one.
  */
 int newNumerationOnFile(char *fileName, int newLines, int logNum)
 {
-    if(newLines >= ROW_LIMIT)
+    if (newLines >= NEWLINE_LIMIT)
     {
         ++logNum;
-        strcpy(fileName, "file");
+        strcpy(fileName, "LogArchive/file");
         lstrcat(fileName, logNum);
     }
-    
-    return logNum; 
+
+    return logNum;
 }
+
+#define FILENAME_LIMIT 20
 
 /**
  * This is the "logger" function.
@@ -206,23 +226,28 @@ int newNumerationOnFile(char *fileName, int newLines, int logNum)
  */
 void logEvent(char *logRow, ...)
 {
-    va_list args;
-    va_start(args, logRow);
-    
-    char *fileName = malloc(FILENAME_LIMIT * sizeof(char));
-    if(fileName == NULL)
+    if(createLogFolder() == -1)
     {
-        puts("logEvent: Error memory allocation resulted in a nullptr.");
-        return;     
+        puts("logEvent: Error couldn't create log archive folder.");
+        return; 
     }
 
-    strcpy(fileName, "file");
+    char *fileName = malloc(FILENAME_LIMIT * sizeof(char));
+    if (fileName == NULL)
+    {
+        puts("logEvent: Error memory allocation resulted in a nullptr.");
+        return;
+    }
+
+    strcpy(fileName, "LogArchive/file");
 
     static int logNum = 0;
     lstrcat(fileName, logNum);
     int newLines = countLogFileNewLines(fileName);
-
     logNum = newNumerationOnFile(fileName, newLines, logNum);
+
+    va_list args;
+    va_start(args, logRow);
 
     FILE *LOG_FILE = fopen(fileName, "a");
     if (LOG_FILE == NULL)
@@ -238,7 +263,7 @@ void logEvent(char *logRow, ...)
 
     fclose(LOG_FILE);
     LOG_FILE = NULL;
-    
+
     free(fileName);
     fileName = NULL;
 }
