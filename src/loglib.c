@@ -184,7 +184,6 @@ int countLogFileNewLines(char *fileName)
     FILE *LOG_FILE = fopen(fileName, "r");
     if (LOG_FILE == NULL)
     {
-        puts("countLogFileNewLines: Error couldn't access file.");
         return newLines;
     }
 

@@ -1,3 +1,6 @@
 # debugLogger
-This is a basic formatting function that takes a string with arguments, format and write it to a file. 
-I started creating this when debugging my snake game and now I want to improve upon it for future needs by putting it in a lib. 
+This is a project of mine giving som base training of variadic functions in c. 
+My goal was to build something like the printf().
+
+The result was a logger, it takes a string argument, and any amount of following arguments which 
+are formatted into the string in a similar way of printf(). Example: "Hello %d", 1 = hello 1. 

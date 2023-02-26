@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include "loglib.h"
 
+void callTests();
+
 int main(void)
 {
     clock_t start_time = 0, end_time = 0;
@@ -18,11 +20,9 @@ int main(void)
     {
         start_time = clock();
 
-        logEvent("Start Test -> char: %c string: %s", 'c', "charArr -> Test End.");
-        logEvent("Start Test -> int: %d long: %ld float: %f -> Test End.", 100411, 9223372036854775807, 12300.423f);
-        logEvent("Start Test -> hex %x -> Test End.", 0x01);
-        logEvent("Start Test -> Only text -> Test End.");
-        logEvent("Start Test -> None %%q -> Test End.");
+        callTests();
+        callTests();
+        callTests();
 
         end_time = clock(); 
         total_time += (double)(end_time - start_time) / CLOCKS_PER_SEC; 
@@ -31,4 +31,13 @@ int main(void)
     printf("Average time: %f", total_time / ExecutionLimit);
 
     return 0;
+}
+
+void callTests(void)
+{
+        logEvent("Start Test -> char: %c string: %s", 'c', "charArr -> Test End.");
+        logEvent("Start Test -> int: %d long: %ld float: %f -> Test End.", 100411, 9223372036854775807, 12300.423f);
+        logEvent("Start Test -> hex %x -> Test End.", 0x01);
+        logEvent("Start Test -> Only text -> Test End.");
+        logEvent("Start Test -> None %%q -> Test End.");
 }
