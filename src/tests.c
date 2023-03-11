@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "loglib.h"
 
-void callTests();
+void callTests(void);
 
 int main(void)
 {
