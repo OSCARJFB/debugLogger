@@ -10,10 +10,7 @@
 #include <time.h>
 #include <sys/stat.h>
 
-/**
- * This function gets the date time year/day/month/hour/min/sec.
- * Data which is used to determine at what time a line was written in the log.
- */
+// This function gets the date time year/day/month/hour/min/sec.
 void setCurrentDateTime(FILE *LOG_FILE)
 {
     time_t t = time(NULL);
@@ -31,12 +28,9 @@ void setCurrentDateTime(FILE *LOG_FILE)
 
 #define LD 208
 
-/**
- * Switches all the different formatting types in a string.
- * The formatter should correspond to the actual datatype stored in the va_list.
- * To be added: manage errors that can occure from wrong formatting input.
- */
-int switchStringFormatters(char f_one, char f_two, va_list args, FILE *LOG_FILE)
+// Switching the different formatting types in a string according to what was stored in the va_list.
+int switchStringFormatters(char f_one, char f_two,
+                           va_list args, FILE *LOG_FILE)
 {
     int forChar = 0;
 
@@ -91,11 +85,8 @@ int switchStringFormatters(char f_one, char f_two, va_list args, FILE *LOG_FILE)
     return ++forChar;
 }
 
-/**
- * Here we actually write most parts of the string to the file.
- * If we find a % character we check wether or not it's followed by a string formatter character.
- */
-void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
+// Write the string and va_list arguments to the file. 
+void writeStringToFile(const char *logRow, va_list args, FILE *LOG_FILE)
 {
     char append_to_file[strlen(logRow)], text[strlen(logRow)];
     int reader = 0;
@@ -124,30 +115,24 @@ void writeStringToFile(char *logRow, va_list args, FILE *LOG_FILE)
     fprintf(LOG_FILE, "\n");
 }
 
-/** 
- *  Check if a folder exists, if not create one. 
- *  This folder will be used for storing the logsfiles.
- */
+// Check if a folder exists, if not create one. 
 int createLogFolder(void)
 {
     struct stat l_stat;
     const char *folderName = "LogArchive";
-    
+
     if (stat(folderName, &l_stat) == -1)
     {
-        if(mkdir(folderName, 0777) == -1)
+        if (mkdir(folderName, 0777) == -1)
         {
-            return -1; 
+            return -1;
         }
     }
 
     return 0;
 }
 
-/**
- *  string concatenation, adding a number to the end of the logfile.
- *  After the number is added, the file extention will be added aswell.
- */
+// string concatenation, adding a number to the end of the logfile.
 void lstrcat(char *fileName, int logNum)
 {
     int strEnd = 0;
@@ -174,10 +159,7 @@ void lstrcat(char *fileName, int logNum)
     }
 }
 
-/**
- *  Counts the number of newlines in the current logfile.
- *  Returns an integer value that is used to determine wether or not data should be written to a new file.
- */
+// Counts the number of newlines in the current logfile.
 int countLogFileNewLines(char *fileName)
 {
     int newLines = 0, c = 0;
@@ -200,10 +182,7 @@ int countLogFileNewLines(char *fileName)
 
 #define NEWLINE_LIMIT 1000
 
-/**
- *  Numerates the logfiles, depending on the amount of rows currently written to the log.
- *  Returns an unchanged value if ROW_LIMIT is not hit, else it will increment the log numeration by one.
- */
+// Numerates the logfiles, depending on the amount of rows currently written to the log.
 int newNumerationOnFile(char *fileName, int newLines, int logNum)
 {
     if (newLines >= NEWLINE_LIMIT)
@@ -218,17 +197,13 @@ int newNumerationOnFile(char *fileName, int newLines, int logNum)
 
 #define FILENAME_LIMIT 20
 
-/**
- * This is the "logger" function.
- * Which when called, initiates the actual log writing.
- * It takes a string with formatters followed by any corresponding amount of parameters.
- */
-void logEvent(char *logRow, ...)
+// This is the "logger" function, Which when called, initiates the actual log writing.
+void logEvent(const char *logRow, ...)
 {
-    if(createLogFolder() == -1)
+    if (createLogFolder() == -1)
     {
         puts("logEvent: Error couldn't create log archive folder.");
-        return; 
+        return;
     }
 
     char *fileName = malloc(FILENAME_LIMIT * sizeof(char));

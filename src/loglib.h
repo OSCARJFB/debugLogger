@@ -6,6 +6,6 @@
 #ifndef LOGLIB_H
 #define LOGLIB_H
 
-void logEvent(char *logRow, ...);
+void logEvent(const char *logRow, ...);
 
 #endif // LOGLIB_H
