@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 
 // This function gets the date time year/day/month/hour/min/sec.
-void setCurrentDateTime(FILE *LOG_FILE)
+static void setCurrentDateTime(FILE *LOG_FILE)
 {
     time_t t = time(NULL);
     struct tm local_time = *localtime(&t);
@@ -29,7 +29,7 @@ void setCurrentDateTime(FILE *LOG_FILE)
 #define LD 208
 
 // Switching the different formatting types in a string according to what was stored in the va_list.
-int switchStringFormatters(char f_one, char f_two,
+static int switchStringFormatters(char f_one, char f_two,
                            va_list args, FILE *LOG_FILE)
 {
     int forChar = 0;
@@ -86,7 +86,7 @@ int switchStringFormatters(char f_one, char f_two,
 }
 
 // Write the string and va_list arguments to the file. 
-void writeStringToFile(const char *logRow, va_list args, FILE *LOG_FILE)
+static void writeStringToFile(const char *logRow, va_list args, FILE *LOG_FILE)
 {
     char append_to_file[strlen(logRow)], text[strlen(logRow)];
     int reader = 0;
@@ -116,7 +116,7 @@ void writeStringToFile(const char *logRow, va_list args, FILE *LOG_FILE)
 }
 
 // Check if a folder exists, if not create one. 
-int createLogFolder(void)
+static int createLogFolder(void)
 {
     struct stat l_stat;
     const char *folderName = "LogArchive";
@@ -133,7 +133,7 @@ int createLogFolder(void)
 }
 
 // string concatenation, adding a number to the end of the logfile.
-void lstrcat(char *fileName, int logNum)
+static void lstrcat(char *fileName, int logNum)
 {
     int strEnd = 0;
     const char *extention = ".log";
@@ -160,7 +160,7 @@ void lstrcat(char *fileName, int logNum)
 }
 
 // Counts the number of newlines in the current logfile.
-int countLogFileNewLines(char *fileName)
+static int countLogFileNewLines(char *fileName)
 {
     int newLines = 0, c = 0;
     FILE *LOG_FILE = fopen(fileName, "r");
@@ -183,7 +183,7 @@ int countLogFileNewLines(char *fileName)
 #define NEWLINE_LIMIT 1000
 
 // Numerates the logfiles, depending on the amount of rows currently written to the log.
-int newNumerationOnFile(char *fileName, int newLines, int logNum)
+static int newNumerationOnFile(char *fileName, int newLines, int logNum)
 {
     if (newLines >= NEWLINE_LIMIT)
     {

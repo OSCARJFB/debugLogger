@@ -29,7 +29,7 @@ int main(void)
     }
 
     printf("Average time: %f", total_time / ExecutionLimit);
-
+    
     return 0;
 }
 
