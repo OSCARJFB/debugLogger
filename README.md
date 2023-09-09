@@ -1,5 +1,5 @@
 # debugLogger
-This is a project of mine aimed giving base training of variadic (#include <stdarg.h>) functions in c. 
+This is a project of mine aimed at giving base training of variadic (#include <stdarg.h>) functions in c. 
 My goal was to build something like the printf().
 
 The result was a logger, it takes a string argument, and any amount of following arguments which 
